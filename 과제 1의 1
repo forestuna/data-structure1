@@ -1,0 +1,21 @@
+#include <limits.h>
+#include <stdio.h>
+
+void check_integer_representation() {
+    // 2의 보수 표현 방식 확인
+    if (INT_MIN == -INT_MAX - 1) {
+        printf("2의 보수입니다.\n");
+    }
+    // 1의 보수 표현 방식 확인
+    else if (INT_MIN == ~(INT_MAX)) {
+        printf("1의 보수입니다.\n");
+    }
+ 
+}
+
+int main() {
+    check_integer_representation();
+    return 0;
+}
+
+// 다른방식이 나올 수 있는지 모르겠습니다, 생성형 AI가 만들어준 큰틀에서 곁가지 몇개를 떼어내고 간략하게 바꾸었습니다.
