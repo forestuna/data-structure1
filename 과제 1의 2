@@ -1,0 +1,31 @@
+#include <stdio.h>
+#include <stdint.h>
+
+int main() {
+    float input;
+    int16_t q8_8;  // Q8.8: 1비트 부호, 7비트 정수, 8비트 소수
+
+    printf("실수를 입력하세요 (-128 <= x < 128 범위): ");
+    if (scanf_s("%f", &input) != 1) {
+        printf("입력 오류\n");
+        return 1;
+    }
+
+    // Q8.8 변환: 소수점 8자리까지, 정수부는 7비트
+    q8_8 = (int16_t)(input * 256.0f);
+
+    uint16_t bits = (uint16_t)q8_8;
+
+    printf("Q8.8 표현: ");
+    // 비트 추출 및 출력 (MSB부터 LSB까지 순차적으로)
+    for (int i = 15; i >= 0; i--) {
+        printf("%d", (bits >> i) & 1);
+        if (i == 8) printf(".");
+    }
+    printf("\n");
+
+    // 확인용
+    printf("원래 값: %.1f\n", q8_8 / 256.0f);
+
+    return 0;
+}
