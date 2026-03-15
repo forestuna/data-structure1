@@ -1,0 +1,21 @@
+#include <stdio.h>
+
+int main() {
+    float f;
+    printf("실수: ");
+    scanf_s("%f", &f);
+
+    // float의 주소를 unsigned int 포인터로 해석하여 값을 가져옴
+    unsigned int i = *(unsigned int*)&f;
+
+    // 부호(1), 지수(8), 가수(23) 비트 추출 및 출력
+    printf("%d / ", (i >> 31)); // 부호
+
+    for (int j = 30; j >= 23; j--) printf("%d", (i >> j) & 1); // 지수
+    printf(" / ");
+
+    for (int j = 22; j >= 0; j--) printf("%d", (i >> j) & 1); // 가수
+    printf("\n");
+
+    return 0;
+}
