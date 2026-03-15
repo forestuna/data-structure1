@@ -1,0 +1,20 @@
+#include <stdio.h>
+
+int main() {
+    char str[100];
+
+    printf("입력: ");
+    // scanf_s는 버퍼 크기를 함께 전달해야 안전합니다.
+    scanf_s("%[^\n]", str, (unsigned int)sizeof(str));
+
+    for (int i = 0; str[i]; i++) {
+        // ASCII: 'a' - 'A' = 32
+        if (str[i] >= 'A' && str[i] <= 'Z') 
+            str[i] += 32;
+        else if (str[i] >= 'a' && str[i] <= 'z') 
+            str[i] -= 32;
+    }
+
+    printf("출력: %s\n", str);
+    return 0;
+}
