@@ -1,76 +1,90 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// 순차 리스트 구조체 정의
+// 1. 순차 리스트 구조체 정의
 typedef struct {
     int* data;      // 데이터를 저장할 동적 배열
-    int capacity;   // 현재 할당된 총 칸 수 (용량)
-    int size;       // 현재 저장된 데이터 개수
+    int capacity;   // 할당된 총 칸 수 (Capacity)
+    int size;       // 현재 저장된 데이터 개수 (Size)
 } ArrayList;
 
-// 리스트 초기화 함수
+// 2. 리스트 초기화
 void init(ArrayList* list, int init_capacity) {
     list->data = (int*)malloc(sizeof(int) * init_capacity);
+    if (list->data == NULL) return; // 메모리 할당 실패 대응
+
     list->capacity = init_capacity;
     list->size = 0;
-    printf("리스트 생성: 초기 용량 %d\n", init_capacity);
+    printf("[시스템] 리스트 생성: 초기 용량 %d\n", init_capacity);
 }
 
-// 리스트에 데이터 추가 (포화 상태 시 realloc 수행)
+// 3. 데이터 추가 (포화 상태 시 realloc 수행)
 void add(ArrayList* list, int value) {
-    // 1. 포화 상태인지 확인
+    // 포화 상태(Full) 확인
     if (list->size == list->capacity) {
-        printf("\n[경고] 포화 상태 발생! 크기를 늘립니다. (%d -> %d)\n", list->capacity, list->capacity * 2);
+        int new_capacity = list->capacity * 2;
+        printf("\n[확장] 리스트 포화! 크기 변경: %d -> %d\n", list->capacity, new_capacity);
         
-        // 2. realloc을 사용하여 크기를 2배로 확장
-        int* temp = (int*)realloc(list->data, sizeof(int) * list->capacity * 2);
+        // realloc을 통한 메모리 재할당
+        int* temp = (int*)realloc(list->data, sizeof(int) * new_capacity);
         
-        // realloc 실패 대응 (메모리 부족 시)
         if (temp == NULL) {
-            printf("메모리 재할당 실패!\n");
+            printf("[오류] 메모리 재할당 실패!\n");
             return;
         }
         
         list->data = temp;
-        list->capacity *= 2;
+        list->capacity = new_capacity;
     }
 
-    // 3. 데이터 삽입
+    // 데이터 삽입
     list->data[list->size] = value;
     list->size++;
-    printf("데이터 추가: %d (현재 크기: %d/%d)\n", value, list->size, list->capacity);
+    printf("추가: %2d | 상태: (%d/%d)\n", value, list->size, list->capacity);
 }
 
-// 리스트 전체 출력
+// 4. 리스트 출력
 void display(ArrayList* list) {
-    printf("현재 리스트: ");
+    if (list->size == 0) {
+        printf("리스트가 비어있습니다.\n");
+        return;
+    }
+
+    printf("\n--- 현재 리스트 데이터 ---\n");
     for (int i = 0; i < list->size; i++) {
         printf("%d ", list->data[i]);
     }
-    printf("\n");
+    printf("\n------------------------\n");
 }
 
-// 메모리 해제
+// 5. 메모리 해제
 void clear(ArrayList* list) {
-    free(list->data);
-    list->data = NULL;
+    if (list->data != NULL) {
+        free(list->data);
+        list->data = NULL;
+    }
     list->size = list->capacity = 0;
+    printf("\n[시스템] 메모리가 해제되었습니다.\n");
 }
 
 int main() {
-    ArrayList myList;
-    init(&myList, 3); // 처음에 작은 크기(3)로 시작
-
-    add(&myList, 10);
-    add(&myList, 20);
-    add(&myList, 30);
+    ArrayList list;
     
-    // 여기서 포화 상태 발생 및 realloc 호출
-    add(&myList, 40); 
-    add(&myList, 50);
+    // 초기 용량 2로 시작하여 확장을 테스트
+    init(&list, 2); 
 
-    display(&myList);
+    add(&list, 10);
+    add(&list, 20);
+    
+    // 이 시점에서 포화 발생 -> 4로 확장
+    add(&list, 30); 
+    add(&list, 40);
+    
+    // 이 시점에서 포화 발생 -> 8로 확장
+    add(&list, 50);
 
-    clear(&myList);
+    display(&list);
+
+    clear(&list);
     return 0;
 }
